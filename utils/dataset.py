@@ -52,7 +52,11 @@ class ReplicaParserv2:
         self.color_paths = natsorted(glob.glob(f"{self.input_folder}/rgb/rgb_*.png"))
         self.depth_paths = natsorted(glob.glob(f"{self.input_folder}/depth/depth_*.png"))
         self.n_img = len(self.color_paths)
+<<<<<<< HEAD
         self.load_poses2(f"{self.input_folder}/traj_w_c.txt")
+=======
+        self.load_poses(f"{self.input_folder}/traj_w_c.txt")
+>>>>>>> 126d06ccdf76deff3abf6c4f85e1828cf0185b8c
 
     def load_poses(self, path):
         self.poses = []
@@ -63,7 +67,11 @@ class ReplicaParserv2:
         for i in range(self.n_img):
             line = lines[i]
             pose = np.array(list(map(float, line.split()))).reshape(4, 4)
+<<<<<<< HEAD
             pose = np.linalg.inv(pose)
+=======
+            # pose = np.linalg.inv(pose)
+>>>>>>> 126d06ccdf76deff3abf6c4f85e1828cf0185b8c
             self.poses.append(pose)
             frame = {
                 "file_path": self.color_paths[i],
@@ -72,6 +80,7 @@ class ReplicaParserv2:
             }
 
             frames.append(frame)
+<<<<<<< HEAD
         self.w2c_first_pose_inverse = np.linalg.inv(self.poses[0])
         
         for i in range(len(self.poses)):
@@ -150,6 +159,9 @@ class ReplicaParserv2:
 
         return res
 
+=======
+        self.frames = frames
+>>>>>>> 126d06ccdf76deff3abf6c4f85e1828cf0185b8c
 
 
 class TUMParser:
@@ -561,7 +573,10 @@ class ReplicaDatasetv2(MonocularDataset):
         self.depth_paths = parser.depth_paths
         self.semantic_path = None
         self.poses = parser.poses
+<<<<<<< HEAD
         print("Using v2 parser")
+=======
+>>>>>>> 126d06ccdf76deff3abf6c4f85e1828cf0185b8c
 
 
 class EurocDataset(StereoDataset):

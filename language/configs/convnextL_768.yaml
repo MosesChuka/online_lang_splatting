@@ -3,7 +3,11 @@ MODEL:
   META_ARCHITECTURE: "SED"
   BACKBONE:
     NAME: "CLIP"
+<<<<<<< HEAD
   WEIGHTS: "pretrained_models/sed_model_large.pth"
+=======
+  WEIGHTS: "sed_model_large.pth"
+>>>>>>> 126d06ccdf76deff3abf6c4f85e1828cf0185b8c
   ENC:
     CLIP_MODEL_NAME: "convnext_large_d_320"
     CLIP_PRETRAINED_WEIGHTS: "laion2b_s29b_b131k_ft_soup"

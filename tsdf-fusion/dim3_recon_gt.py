@@ -8,6 +8,7 @@ import numpy as np
 
 import fusion
 
+<<<<<<< HEAD
 prefix = '/data/online_lang_splatting/data/vmap/room_0/imap/00'
 color_prefix = '/data/online_lang_splatting/data/vmap/room_0/imap/00/semantic_color'
 save_path = '/data/online_lang_splatting/output/room0_small/omni_data_result/room_0/2026-05-03-14-55-25/psnr/before_opt'
@@ -15,6 +16,12 @@ save_path = '/data/online_lang_splatting/output/room0_small/omni_data_result/roo
 # prefix = '/media/saimouli/RPNG_FLASH_4/datasets/Replica2/vmap/room_0/imap/00'
 # color_prefix = '/media/saimouli/RPNG_FLASH_4/datasets/Replica2/vmap/room_0/imap/00/semantic_color'
 # save_path = '/media/saimouli/Data6T/Replica/omni_data_result/room_0_small/2025-03-24-06-23-28/psnr/before_opt'
+=======
+
+prefix = '/media/saimouli/RPNG_FLASH_4/datasets/Replica2/vmap/room_0/imap/00'
+color_prefix = '/media/saimouli/RPNG_FLASH_4/datasets/Replica2/vmap/room_0/imap/00/semantic_color'
+save_path = '/media/saimouli/Data6T/Replica/omni_data_result/room_0_small/2025-03-24-06-23-28/psnr/before_opt'
+>>>>>>> 126d06ccdf76deff3abf6c4f85e1828cf0185b8c
 
 if __name__ == "__main__":
   # ======================================================================================================== #
