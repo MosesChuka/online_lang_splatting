@@ -612,7 +612,7 @@ class GaussianModel:
             axis=1,
         )
         opacities = np.asarray(plydata.elements[0]["opacity"])[..., np.newaxis]
-
+        print(f"GaussianModel: Loaded {xyz.shape[0]} points from {path}")
         # Load feature data
         features_dc = np.zeros((xyz.shape[0], 3, 1))
         features_dc[:, 0, 0] = np.asarray(plydata.elements[0]["f_dc_0"])
@@ -655,6 +655,21 @@ class GaussianModel:
         rots = np.zeros((xyz.shape[0], len(rot_names)))
         for idx, attr_name in enumerate(rot_names):
             rots[:, idx] = np.asarray(plydata.elements[0][attr_name])
+        
+        # Load langauge feature
+        language_feature_names = [
+            p.name for p in plydata.elements[0].properties if p.name.startswith("f_language_")
+        ]
+        language_feature_names = sorted(language_feature_names, key=lambda x: int(x.split("_")[-1]))
+        
+        if len(language_feature_names) > 0:
+            self.is_langauge = True
+            language_features = np.zeros((xyz.shape[0], len(language_feature_names)))
+            for idx, attr_name in enumerate(language_feature_names):
+                language_features[:,idx] = np.asarray(plydata.elements[0][attr_name])
+        else:
+            self.is_langauge = False
+            
 
         # Create model parameters
         self._xyz = nn.Parameter(
@@ -681,7 +696,14 @@ class GaussianModel:
         self._rotation = nn.Parameter(
             torch.tensor(rots, dtype=torch.float, device="cuda").requires_grad_(True)
         )
-        
+
+        if len(language_feature_names)>0:
+            self._language_feature = nn.Parameter(
+                torch.tensor(language_features, dtype=torch.float, device="cuda").requires_grad_(True)
+            )
+        else:
+            self._language_feature = torch.empty(0, device="cuda")
+            
         # Initialize tracking tensors
         self.active_sh_degree = self.max_sh_degree
         self.max_radii2D = torch.zeros((self._xyz.shape[0]), device="cuda")

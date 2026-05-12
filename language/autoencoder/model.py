@@ -1,8 +1,8 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import lightning.pytorch as pl
-#import pytorch_lightning as pl
+#import lightning.pytorch as pl
+from pytorch_lightning import LightningModule
 import sys
 import os
 sys.path.append(os.path.join(os.path.dirname(__file__), "../.."))
@@ -61,7 +61,7 @@ class AutoencoderMLP(nn.Module):
         x = x / x.norm(dim=-1, keepdim=True)
         return x
     
-class AutoencoderLight(pl.LightningModule):
+class AutoencoderLight(LightningModule):
     def __init__(self, encoder_hidden_dims, decoder_hidden_dims, in_channel_dim=768, is_MLP=True):
         super(AutoencoderLight, self).__init__()
         self.isMLP = is_MLP

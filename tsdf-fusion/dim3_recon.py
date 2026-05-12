@@ -2,19 +2,21 @@
 """
 
 import time
-
+import os
 import cv2
 import numpy as np
 
 import fusion2
 
-
-prefix = '/home/choyingw/Documents/GaussianGripMapping/datasets/replica_v2/office_0/imap/00'
-#color_prefix = '/home/choyingw/Documents/GaussianGripMapping/datasets/Replica/room0_test/HR/colorized_1'
-#color_prefix = '/home/choyingw/Documents/GaussianGripMapping/results/datasets_Replica/2024-11-07-11-16-57/psnr/before_opt/lang'
-#color_prefix = '/home/choyingw/Documents/GaussianGripMapping/results/datasets_Replica/2024-11-12-21-18-06/psnr/before_opt/lang/'
-color_prefix = '/home/choyingw/Documents/GaussianGripMapping/datasets/replica_v2/office_0/imap/00/semantic_color'
-save_path = '/home/choyingw/Documents/langsplat_results/office0'
+prefix = '/data/online_lang_splatting/data/vmap/room_0/imap/00'
+color_prefix = '/data/online_lang_splatting/data/vmap/room_0/imap/00/semantic_color'
+save_path = '/data/online_lang_splatting/output/room_0/2026-05-03-14-55-25/results'
+# prefix = '/home/choyingw/Documents/GaussianGripMapping/datasets/replica_v2/office_0/imap/00'
+# #color_prefix = '/home/choyingw/Documents/GaussianGripMapping/datasets/Replica/room0_test/HR/colorized_1'
+# #color_prefix = '/home/choyingw/Documents/GaussianGripMapping/results/datasets_Replica/2024-11-07-11-16-57/psnr/before_opt/lang'
+# #color_prefix = '/home/choyingw/Documents/GaussianGripMapping/results/datasets_Replica/2024-11-12-21-18-06/psnr/before_opt/lang/'
+# color_prefix = '/home/choyingw/Documents/GaussianGripMapping/datasets/replica_v2/office_0/imap/00/semantic_color'
+# save_path = '/home/choyingw/Documents/langsplat_results/office0'
 
 if __name__ == "__main__":
   # ======================================================================================================== #
@@ -73,6 +75,8 @@ if __name__ == "__main__":
 
   # Get mesh from voxel volume and save to disk (can be viewed with Meshlab)
   print("Saving mesh to mesh.ply...")
+
+  os.makedirs(save_path, exist_ok=True)
   verts, faces, norms, colors = tsdf_vol.get_mesh()
   fusion2.meshwrite(f"{save_path}/GT_semantic_mesh.ply", verts, faces, norms, colors)
   colors = (colors + 1) * 127.5

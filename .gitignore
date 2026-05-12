@@ -11,3 +11,8 @@ doxgen_generated
 doc
 .vscode
 __pycache__
+*/*.pth
+
+pretrained_models/*
+data/
+output/

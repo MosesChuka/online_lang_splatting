@@ -8,13 +8,17 @@ import numpy as np
 from skimage import measure
 import fusion3
 
+prefix = '/data/online_lang_splatting/data/vmap/room_0/imap/00'
 
-prefix = '/media/saimouli/RPNG_FLASH_4/datasets/Replica2/vmap/room_0_small/imap/00'
+# prefix = '/media/saimouli/RPNG_FLASH_4/datasets/Replica2/vmap/room_0_small/imap/00'
 #color_prefix = '/home/choyingw/Documents/GaussianGripMapping/datasets/Replica/room0_test/HR/colorized_1'
 #color_prefix = '/home/choyingw/Documents/1029_15dim/GaussianGripMapping/results/datasets_Replica/2024-10-30-17-54-47/psnr/before_opt/lang'
 
+# Using local system run results 
+color_prefix = '/data/online_lang_splatting/output/room0_small/omni_data_result/room_0/2026-05-03-14-55-25/psnr/before_opt/lang'
+
 # Download the langslam results from Dropbox and put it here
-color_prefix = '/media/saimouli/Data6T/Replica/omni_data_result/room_0_small/2025-03-24-06-23-28/psnr/before_opt/lang'
+# color_prefix = '/media/saimouli/Data6T/Replica/omni_data_result/room_0_small/2025-03-24-06-23-28/psnr/before_opt/lang'
 
 if __name__ == "__main__":
   # ======================================================================================================== #

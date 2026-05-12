@@ -316,18 +316,25 @@ def pc15_parser(txt_file):
 
 ### Various Paths
 # Replica_v2 for config
-path = '/media/saimouli/RPNG_FLASH_4/datasets/Replica2/vmap/room_0/imap/00/render_config.yaml'
+# path = '/media/saimouli/RPNG_FLASH_4/datasets/Replica2/vmap/room_0/imap/00/render_config.yaml'
+path = '/data/online_lang_splatting/data/vmap/room_0/imap/00/render_config.yaml'
 # Your langsplat/ langslam result path to load reconstructed TSDF
-load_path = '/media/saimouli/Data6T/Replica/omni_data_result/room_0_small/2025-03-24-06-23-28/psnr/before_opt'
+# load_path = '/media/saimouli/Data6T/Replica/omni_data_result/room_0_small/2025-03-24-06-23-28/psnr/before_opt'
+load_path = '/data/online_lang_splatting/output/room0_small/omni_data_result/room_0/2026-05-03-14-55-25/psnr/before_opt'
 # where to save point cloud/ mesh results
 pc_save_path = f'{load_path}/3d_mesh'
 # auto-encoder path
-ae_ckpt_path = "/home/saimouli/Desktop/Bosch/training_weights_general/ae_149_he.ckpt"
+# ae_ckpt_path = "/home/saimouli/Desktop/Bosch/training_weights_general/ae_149_he.ckpt"
+ae_ckpt_path = '/data/online_lang_splatting/pretrained_models/omni_general/ae_149_he.ckpt'
+
 online_ckpt = torch.load(f'{load_path}/online_15_room0.pth')
 # color matrix for groundtruth class
-color_mat = np.load('/media/saimouli/RPNG_FLASH_4/datasets/Replica2/vmap/room_0/imap/00/color_code.npy')
+# color_mat = np.load('/media/saimouli/RPNG_FLASH_4/datasets/Replica2/vmap/room_0/imap/00/color_code.npy')
+color_mat = np.load('/data/online_lang_splatting/data/vmap/room_0/imap/00/color_code.npy')
+
 # where is the reconstructed groundtruth point cloud
-gt_pcd = o3d.io.read_point_cloud("/media/saimouli/Data6T/Replica/omni_data_result/room_0_small/2025-03-24-06-23-28/psnr/before_opt/GT_semantic_pc.ply")
+# gt_pcd = o3d.io.read_point_cloud("/media/saimouli/Data6T/Replica/omni_data_result/room_0_small/2025-03-24-06-23-28/psnr/before_opt/GT_semantic_pc.ply")
+gt_pcd = o3d.io.read_point_cloud("/data/online_lang_splatting/output/room_0/2026-05-03-14-55-25/results/GT_semantic_pc.ply")
 
 os.makedirs(pc_save_path, exist_ok=True)
 normals, faces = mesh_parser(f'{load_path}/semantic_mesh_color.ply')

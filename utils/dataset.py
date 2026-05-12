@@ -52,7 +52,7 @@ class ReplicaParserv2:
         self.color_paths = natsorted(glob.glob(f"{self.input_folder}/rgb/rgb_*.png"))
         self.depth_paths = natsorted(glob.glob(f"{self.input_folder}/depth/depth_*.png"))
         self.n_img = len(self.color_paths)
-        self.load_poses(f"{self.input_folder}/traj_w_c.txt")
+        self.load_poses2(f"{self.input_folder}/traj_w_c.txt")
 
     def load_poses(self, path):
         self.poses = []
@@ -63,7 +63,7 @@ class ReplicaParserv2:
         for i in range(self.n_img):
             line = lines[i]
             pose = np.array(list(map(float, line.split()))).reshape(4, 4)
-            # pose = np.linalg.inv(pose)
+            pose = np.linalg.inv(pose)
             self.poses.append(pose)
             frame = {
                 "file_path": self.color_paths[i],
@@ -72,7 +72,84 @@ class ReplicaParserv2:
             }
 
             frames.append(frame)
+        self.w2c_first_pose_inverse = np.linalg.inv(self.poses[0])
+        
+        for i in range(len(self.poses)):
+            self.poses[i] = self.w2c_first_pose_inverse @ self.poses[i]
         self.frames = frames
+        
+    def load_poses2(self, path):
+        self.poses = []
+        self.frames = []
+        print("In load poses 2")
+        
+        with open(path, "r") as f:
+            lines = f.readlines()
+
+        # 1. Load all raw World-to-Camera (W2C) poses first
+        raw_w2c_list = []
+        for i in range(min(self.n_img, len(lines))):
+            line = lines[i]
+            c2w = np.array(list(map(float, line.split()))).reshape(4, 4)
+            w2c = np.linalg.inv(c2w)
+            raw_w2c_list.append(w2c)
+
+        # 2. Define our normalization "anchor"
+        # Since raw_w2c_list[0] is W2C, its inverse is the first C2W.
+        # Multiplying C2W_0 @ W2C_i makes the first pose Identity.
+        first_w2c_inv = np.linalg.inv(raw_w2c_list[0])
+        
+        flip_mat = np.eye(4)
+        flip_mat[1, 1] = 1 
+        flip_mat[2, 2] = 1
+        flip_mat[3, 3] = 1
+        
+        #turn left
+        turn_left = self.get_yaw_rotation(-30)
+        move_forward = np.eye(4)
+        move_forward[2, 3] = 1.0
+        
+        first_w2c_inv =  flip_mat @ first_w2c_inv
+        
+        # 3. Apply normalization and populate both lists
+        for i, w2c in enumerate(raw_w2c_list):
+            normalized_pose =  first_w2c_inv @ w2c
+            
+            self.poses.append(normalized_pose)
+            
+            # Sync the frame dictionary with the normalized pose
+            frame = {
+                "file_path": self.color_paths[i],
+                "depth_path": self.depth_paths[i],
+                "transform_matrix": normalized_pose.tolist(),
+            }
+            self.frames.append(frame)
+            
+
+
+    def get_yaw_rotation(self,angle_deg):
+        """
+        Generates a 4x4 rotation matrix around the Y-axis.
+        Positive angle = Left turn
+        Negative angle = Right turn
+        """
+        # Convert degrees to radians
+        rel_rad = np.radians(angle_deg)
+        c = np.cos(rel_rad)
+        s = np.sin(rel_rad)
+
+        # Initialize Identity Matrix
+        res = np.eye(4)
+
+        # Apply Y-axis rotation (Yaw)
+        # This assumes a right-handed coordinate system
+        res[0, 0] = c
+        res[0, 2] = -s  # Turning Left with positive angle
+        res[2, 0] = s
+        res[2, 2] = c
+
+        return res
+
 
 
 class TUMParser:
@@ -484,6 +561,7 @@ class ReplicaDatasetv2(MonocularDataset):
         self.depth_paths = parser.depth_paths
         self.semantic_path = None
         self.poses = parser.poses
+        print("Using v2 parser")
 
 
 class EurocDataset(StereoDataset):

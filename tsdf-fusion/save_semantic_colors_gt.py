@@ -14,9 +14,10 @@ def generate_random_colors(N):
         color = [random.randint(0, 255) for _ in range(3)] 
         colors.append(color)
     return np.array(colors)
-
-sem_path = '/media/saimouli/RPNG_FLASH_4/datasets/Replica2/vmap/room_0/imap/00/semantic_class'
-sem_save = '/media/saimouli/RPNG_FLASH_4/datasets/Replica2/vmap/room_0/imap/00/semantic_color'
+sem_path = '/data/online_lang_splatting/data/vmap/room_0/imap/00/semantic_class'
+sem_save = '/data/online_lang_splatting/data/vmap/room_0/imap/00/semantic_color'
+# sem_path = '/media/saimouli/RPNG_FLASH_4/datasets/Replica2/vmap/room_0/imap/00/semantic_class'
+# sem_save = '/media/saimouli/RPNG_FLASH_4/datasets/Replica2/vmap/room_0/imap/00/semantic_color'
 os.makedirs(sem_save, exist_ok=True)
 
 random_colors = generate_random_colors(225)

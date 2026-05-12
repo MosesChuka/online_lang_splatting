@@ -1,0 +1,15 @@
+name: LangGS
+channels:
+  - defaults
+dependencies:
+  - tqdm
+  - pip=26.0.1
+  - libgcc-ng[version='>=13']
+  - libstdcxx-ng[version='>=13']
+  - icu[version='>=78']
+  - python=3.10.20
+  - cudatoolkit=11.8
+  - torchvision=0.26.0
+  - pytorch=2.10.0
+  - plyfile=0.8.1
+prefix: /miniconda3/envs/LangGS
