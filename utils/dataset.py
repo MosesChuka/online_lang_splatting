@@ -52,11 +52,7 @@ class ReplicaParserv2:
         self.color_paths = natsorted(glob.glob(f"{self.input_folder}/rgb/rgb_*.png"))
         self.depth_paths = natsorted(glob.glob(f"{self.input_folder}/depth/depth_*.png"))
         self.n_img = len(self.color_paths)
-<<<<<<< HEAD
         self.load_poses2(f"{self.input_folder}/traj_w_c.txt")
-=======
-        self.load_poses(f"{self.input_folder}/traj_w_c.txt")
->>>>>>> 126d06ccdf76deff3abf6c4f85e1828cf0185b8c
 
     def load_poses(self, path):
         self.poses = []
@@ -67,11 +63,7 @@ class ReplicaParserv2:
         for i in range(self.n_img):
             line = lines[i]
             pose = np.array(list(map(float, line.split()))).reshape(4, 4)
-<<<<<<< HEAD
             pose = np.linalg.inv(pose)
-=======
-            # pose = np.linalg.inv(pose)
->>>>>>> 126d06ccdf76deff3abf6c4f85e1828cf0185b8c
             self.poses.append(pose)
             frame = {
                 "file_path": self.color_paths[i],
@@ -80,7 +72,6 @@ class ReplicaParserv2:
             }
 
             frames.append(frame)
-<<<<<<< HEAD
         self.w2c_first_pose_inverse = np.linalg.inv(self.poses[0])
         
         for i in range(len(self.poses)):
@@ -159,9 +150,6 @@ class ReplicaParserv2:
 
         return res
 
-=======
-        self.frames = frames
->>>>>>> 126d06ccdf76deff3abf6c4f85e1828cf0185b8c
 
 
 class TUMParser:
@@ -320,13 +308,27 @@ class MonocularDataset(BaseDataset):
     def __init__(self, args, path, config):
         super().__init__(args, path, config)
         calibration = config["Dataset"]["Calibration"]
+        self.H_Out = calibration["H_Out"]
+        self.W_Out = calibration["W_Out"]
+        self.h_scale = self.H_Out / calibration["height"]
+        self.w_scale = self.W_Out / calibration["width"]
         # Camera prameters
-        self.fx = calibration["fx"]
-        self.fy = calibration["fy"]
-        self.cx = calibration["cx"]
-        self.cy = calibration["cy"]
         self.width = calibration["width"]
         self.height = calibration["height"]
+
+        if self.width != self.W_Out or self.height != self.H_Out:
+            self.fx = calibration["fx"] * self.w_scale
+            self.fy = calibration["fy"] * self.h_scale
+            self.cx = calibration["cx"] * self.w_scale
+            self.cy = calibration["cy"] * self.h_scale
+            self.width = self.W_Out
+            self.height = self.H_Out
+        else:
+            self.fx = calibration["fx"]
+            self.fy = calibration["fy"]
+            self.cx = calibration["cx"]
+            self.cy = calibration["cy"]
+
         self.fovx = focal2fov(self.fx, self.width)
         self.fovy = focal2fov(self.fy, self.height)
         self.K = np.array([[self.fx, 0.0, self.cx], [0.0, self.fy, self.cy], [0.0, 0.0, 1.0]])
@@ -361,6 +363,16 @@ class MonocularDataset(BaseDataset):
                 "translation": np.zeros(3),
             },
         }
+        
+    def _resize_color(self, image):
+        if image.shape[0] == self.height and image.shape[1] == self.width:
+            return image
+        return cv2.resize(image, (self.width, self.height), interpolation=cv2.INTER_AREA)
+
+    def _resize_depth(self, depth):
+        if depth.shape[0] == self.height and depth.shape[1] == self.width:
+            return depth
+        return cv2.resize(depth, (self.width, self.height), interpolation=cv2.INTER_NEAREST)
 
     def get_langsplat_feature(self, seg_map, feature_level, feature_map):
         _, feat_height, feat_width = seg_map.shape
@@ -399,10 +411,13 @@ class MonocularDataset(BaseDataset):
 
         if self.disorted:
             image = cv2.remap(image, self.map1x, self.map1y, cv2.INTER_LINEAR)
-
+         
+        image = self._resize_color(image)
+        
         if self.has_depth:
             depth_path = self.depth_paths[idx]
             depth = np.array(Image.open(depth_path)) / self.depth_scale
+            depth = self._resize_depth(depth)
 
         if self.load_labels:
             # To run high res labels uncomment the following lines
@@ -573,10 +588,7 @@ class ReplicaDatasetv2(MonocularDataset):
         self.depth_paths = parser.depth_paths
         self.semantic_path = None
         self.poses = parser.poses
-<<<<<<< HEAD
         print("Using v2 parser")
-=======
->>>>>>> 126d06ccdf76deff3abf6c4f85e1828cf0185b8c
 
 
 class EurocDataset(StereoDataset):

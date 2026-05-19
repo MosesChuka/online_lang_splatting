@@ -339,11 +339,7 @@ class BackEnd(mp.Process):
         if not self.is_single_stage:
             online_auto_optimizer = optim.Adam(self.online_auto.parameters(), lr=1e-3)
             online_auto_scheduler = optim.lr_scheduler.ReduceLROnPlateau(
-<<<<<<< HEAD
                 online_auto_optimizer, mode='min', factor=0.5, patience=10, threshold=1e-4 #, verbose=True
-=======
-                online_auto_optimizer, mode='min', factor=0.5, patience=10, threshold=1e-4, verbose=True
->>>>>>> 126d06ccdf76deff3abf6c4f85e1828cf0185b8c
             )
             
         Log(f"Initializing from viewpoint {cur_frame_idx}")
@@ -484,11 +480,7 @@ class BackEnd(mp.Process):
         if not self.is_single_stage:
             online_auto_optimizer = optim.Adam(self.online_auto.parameters(), lr=1e-4)
             online_auto_scheduler = optim.lr_scheduler.ReduceLROnPlateau(
-<<<<<<< HEAD
                 online_auto_optimizer, mode='min', factor=0.5, patience=10, threshold=1e-5, #verbose=True
-=======
-                online_auto_optimizer, mode='min', factor=0.5, patience=10, threshold=1e-5, verbose=True
->>>>>>> 126d06ccdf76deff3abf6c4f85e1828cf0185b8c
             )
 
         # Prepare viewpoints

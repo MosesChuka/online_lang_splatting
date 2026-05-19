@@ -31,6 +31,8 @@ Dataset:
     height: 680
     depth_scale: 1000.0
     distorted: False
+    H_Out: 264
+    W_Out: 440
 
 Training:
   init_itr_num: 1050
@@ -66,18 +68,10 @@ Training:
 language:
   labels_from_file: False
   language_train: False
-<<<<<<< HEAD
   auto_ckpt_path: "/data/online_lang_splatting/pretrained_models/omni_general/ae_149_he.ckpt" #/media/sai/External HDD/sai/datasets/langslam/Replica/weights/version_5_code32/epoch=127-step=17536.ckpt"
   lang_model_path: "/data/online_lang_splatting/pretrained_models/seg_clip_model_l.pth"
   lang_label_path: ""
   hr_ckpt_path: "/data/online_lang_splatting/pretrained_models/omni_general/high_res_71_indoor.ckpt"
-=======
-  auto_ckpt_path: "OnlineLanguageSplatting/pretrained_models/omni_general/ae_149_he.ckpt" #/media/sai/External HDD/sai/datasets/langslam/Replica/weights/version_5_code32/epoch=127-step=17536.ckpt"
-  lang_model_path: "OnlineLanguageSplatting/seg_clip_model_l.pth"
-  lang_label_path: ""
-  hr_ckpt_path: "OnlineLanguageSplatting/pretrained_models/omni_general/high_res_71_indoor.ckpt"
-
->>>>>>> 126d06ccdf76deff3abf6c4f85e1828cf0185b8c
 opt_params:
   iterations: 30000
   position_lr_init: 0.00016

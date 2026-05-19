@@ -103,15 +103,10 @@ class FrontEnd(mp.Process):
         self.window_size = self.config["Training"]["window_size"]
         self.single_thread = self.config["Training"]["single_thread"]
 
-<<<<<<< HEAD
     def add_new_keyframe(self, cur_frame_idx: int, 
                         depth: Optional[torch.Tensor] = None, 
                         opacity: Optional[torch.Tensor] = None, 
                         init: bool = False) -> np.ndarray:
-=======
-    def add_new_keyframe(self, cur_frame_idx: int, depth: Optional[torch.Tensor] = None, 
-                        opacity: Optional[torch.Tensor] = None, init: bool = False) -> np.ndarray:
->>>>>>> 126d06ccdf76deff3abf6c4f85e1828cf0185b8c
         """
         Add a new keyframe to the system.
         
