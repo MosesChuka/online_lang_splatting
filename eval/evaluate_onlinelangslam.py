@@ -446,9 +446,18 @@ if __name__ == "__main__":
     parser.add_argument("--code_size", type=int, default=15)
 
     args = parser.parse_args()
+    
+    config_path = os.path.join(args.root_dir, "config.yml")
+    with open(config_path, "r") as f:
+        config = yaml.safe_load(f)
+        
+    args.root_dir = os.path.join(args.root_dir, "psnr", "before_opt")  # Update root_dir to point to the correct folder containing features and labels
 
     # Folder that contains rendered 2D language features
     feat_dir = [os.path.join(args.root_dir, "lang")]
+
+    args.ae_ckpt_dir = config["language"]["auto_ckpt_path"]
+    args.online_ae_ckpt = config["language"]["online_ckpt_path"]
 
     # Labels created from the create_replica_labels.py
     label_folder = os.path.join(args.root_dir, args.label_name)
@@ -457,9 +466,9 @@ if __name__ == "__main__":
     dataset_name = args.dataset_name
     output_path = os.path.join(output_folder, dataset_name)
     os.makedirs(output_path, exist_ok=True)
-    mask_thresh = args.mask_thresh
-    ae_ckpt_path = args.ae_ckpt_dir
-    online_ckpt_path = args.online_ae_ckpt
+    mask_thresh = args.mask_thresh 
+    ae_ckpt_path = args.ae_ckpt_dir if args.ae_ckpt_dir is not None else config["language"]["ae_ckpt_path"]
+    online_ckpt_path = args.online_ae_ckpt if args.online_ae_ckpt is not None else config["language"]["online_ckpt_path"]
     timestamp = time.strftime("%Y%m%d_%H%M%S", time.localtime())
     log_file = os.path.join(output_path, f"{timestamp}.log")
     logger = get_logger(f"{dataset_name}", log_file=log_file, log_level=logging.INFO)

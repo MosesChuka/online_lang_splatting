@@ -16,6 +16,7 @@ Main responsibilities:
 
 import random
 import time
+import os
 
 import torch
 import torch.multiprocessing as mp
@@ -350,7 +351,7 @@ class BackEnd(mp.Process):
 
             # Render the scene
             render_pkg = render(
-                viewpoint, self.gaussians, self.pipeline_params, self.background
+                viewpoint, self.gaussians, self.pipeline_params, self.background,
             )
             
             # Extract render package components
@@ -403,7 +404,7 @@ class BackEnd(mp.Process):
                         low_dim_coco, 
                         online_auto_optimizer,
                         online_auto_scheduler, 
-                        viz=(mapping_iteration % 300 == 0)
+                        viz=(mapping_iteration % 300 == 0 and self.config["Results"].get("use_gui", False))
                     )
                     Log(f"Online training time: {time.time() - t1:.3f}s")
 
@@ -568,7 +569,7 @@ class BackEnd(mp.Process):
                                     viewpoint.coco_lang_feat,
                                     online_auto_optimizer,
                                     online_auto_scheduler,
-                                    viz=(self.iteration_count % 3 == 0)
+                                    viz=(self.config["Results"].get("use_gui", False) and self.iteration_count % 3 == 0)
                                 )
 
                             # Store language features
@@ -644,9 +645,9 @@ class BackEnd(mp.Process):
                             viewpoint.coco_lang_feat, 
                             online_auto_optimizer, 
                             online_auto_scheduler,
-                            viz=(self.iteration_count % 3 == 0)
+                            viz=(self.iteration_count % 3 == 0 and self.config["Results"].get("use_gui", False))
                         )
-                    
+
                 # Compute mapping loss
                 loss_mapping += get_loss_mapping(
                     self.config, image, depth, viewpoint, opacity
@@ -892,7 +893,7 @@ class BackEnd(mp.Process):
                         # Save online autoencoder weights
                         torch.save(
                             self.online_auto.state_dict(), 
-                            self.config["language"]["online_ckpt_path"]
+                            self.config["save_dir"] + "/" + self.config["language"]["online_ckpt_path"]
                         )
                         Log("Saved online autoencoder weights")
                     self.push_to_frontend()

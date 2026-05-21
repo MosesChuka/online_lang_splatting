@@ -75,11 +75,7 @@ def get_lang_feat(inputs, model, is_lang=True):
 
 def load_lang_model(model_path=None):
     if model_path is not None:
-<<<<<<< HEAD
         model = torch.load(model_path, map_location="cuda:0", weights_only=False)
-=======
-        model = torch.load(model_path, map_location="cuda:0")
->>>>>>> 126d06ccdf76deff3abf6c4f85e1828cf0185b8c
     else:
         args = get_parser().parse_args()
         cfg = setup_cfg(args)

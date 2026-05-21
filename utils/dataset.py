@@ -688,6 +688,97 @@ class RealsenseDataset(BaseDataset):
         return image, depth, pose
 
 
+class WildMocapParser:
+    def __init__(self, input_folder, max_dt=0.02):
+        self.input_folder = input_folder
+        self.max_dt = max_dt
+        self.load_poses(input_folder)
+        self.n_img = len(self.color_paths)
+
+    def parse_list(self, filepath):
+        rows = []
+        with open(filepath, "r") as f:
+            for line in f:
+                line = line.strip()
+                if not line or line.startswith("#"):
+                    continue
+                rows.append(line.split())
+        return np.asarray(rows, dtype=np.str_)
+    
+    def _associate_nearest(self, source_timestamps, target_timestamps):
+        indices = []
+        for timestamp in source_timestamps:
+            index = int(np.argmin(np.abs(target_timestamps - timestamp)))
+            if abs(target_timestamps[index] - timestamp) > self.max_dt:
+                indices.append(None)
+            else:
+                indices.append(index)
+        return indices
+
+    def load_poses(self, datapath):
+        image_data = self.parse_list(os.path.join(datapath, "rgb.txt"))
+        depth_data = self.parse_list(os.path.join(datapath, "depth.txt"))
+        pose_data = self.parse_list(os.path.join(datapath, "groundtruth.txt"))
+
+        image_timestamps = image_data[:, 0].astype(np.float64)
+        depth_timestamps = depth_data[:, 0].astype(np.float64)
+        pose_timestamps = pose_data[:, 0].astype(np.float64)
+
+        depth_indices = self._associate_nearest(image_timestamps, depth_timestamps)
+        pose_indices = self._associate_nearest(image_timestamps, pose_timestamps)
+
+        self.color_paths, self.depth_paths, self.poses, self.frames = [], [], [], []
+
+        for image_idx, (depth_idx, pose_idx) in enumerate(zip(depth_indices, pose_indices)):
+            if depth_idx is None or pose_idx is None:
+                continue
+
+            color_path = os.path.join(datapath, image_data[image_idx, 1])
+            depth_path = os.path.join(datapath, depth_data[depth_idx, 1])
+
+            if not os.path.isfile(color_path) or not os.path.isfile(depth_path):
+                continue
+
+            pose_vec = pose_data[pose_idx]
+            trans = pose_vec[1:4].astype(np.float64)
+            quat = pose_vec[4:8].astype(np.float64)
+
+            c2w = trimesh.transformations.quaternion_matrix(np.roll(quat, 1))
+            c2w[:3, 3] = trans
+            w2c = np.linalg.inv(c2w)
+
+            self.color_paths.append(color_path)
+            self.depth_paths.append(depth_path)
+            self.poses.append(w2c)
+            self.frames.append(
+                {
+                    "file_path": color_path,
+                    "depth_path": depth_path,
+                    "transform_matrix": w2c.tolist(),
+                }
+            )
+
+
+class WildMocapDataset(MonocularDataset):
+    def __init__(self, args, path, config):
+        super().__init__(args, path, config)
+
+        dataset_path = config["Dataset"]["dataset_path"]
+        max_dt = config["Dataset"].get("association_max_dt", 0.02)
+
+        self.load_labels = config.get("language", {}).get("labels_from_file", False)
+        if self.load_labels:
+            label_path = config["language"]["lang_label_path"]
+            self.seg_map_path = sorted(glob.glob(f"{label_path}/*_s.npy"))
+            self.feat_map_path = sorted(glob.glob(f"{label_path}/*_ld.npy"))
+
+        parser = WildMocapParser(dataset_path, max_dt=max_dt)
+        self.num_imgs = parser.n_img
+        self.color_paths = parser.color_paths
+        self.depth_paths = parser.depth_paths
+        self.poses = parser.poses
+
+
 def load_dataset(args, path, config):
     if config["Dataset"]["type"] == "tum":
         return TUMDataset(args, path, config)
@@ -699,5 +790,7 @@ def load_dataset(args, path, config):
         return EurocDataset(args, path, config)
     elif config["Dataset"]["type"] == "realsense":
         return RealsenseDataset(args, path, config)
+    elif config["Dataset"]["type"] == "wildmocap":
+        return WildMocapDataset(args, path, config)
     else:
         raise ValueError("Unknown dataset type")

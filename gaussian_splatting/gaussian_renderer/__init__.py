@@ -18,10 +18,6 @@ from diff_gaussian_rasterization import (
     LanguageGaussianRasterizer,
 )
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 126d06ccdf76deff3abf6c4f85e1828cf0185b8c
 from gaussian_splatting.scene.gaussian_model import GaussianModel
 from gaussian_splatting.utils.sh_utils import eval_sh
 from utils.camera_utils import Camera

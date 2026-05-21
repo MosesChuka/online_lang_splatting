@@ -1,6 +1,6 @@
 Results:
   save_results: True
-  save_dir: "/data/online_lang_splatting/output/Replica"
+  save_dir: "/data/online_lang_splatting/output/Wild_SLAM_Mocap"
   save_trj: False
   save_trj_kf_intv: 20
   use_gui: False
@@ -12,7 +12,7 @@ Dataset:
   pcd_downsample_init: 32
   adaptive_pointsize: True
   point_size: 0.05
-  type: 'replicav2'
+  type: 'wildmocap'
   Calibration:
     fx: 600.0
     fy: 600.0
