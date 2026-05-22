@@ -16,6 +16,6 @@ __pycache__
 pretrained_models/*
 data/
 output/
-
-
+.conda
+.cache
 sample/
